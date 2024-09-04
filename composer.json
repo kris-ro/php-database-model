@@ -1,0 +1,24 @@
+{
+    "name": "kris-ro/php-database-model",
+    "description": "PHP Model for querying database",
+    "type": "library",
+    "require": {
+        "php": "8.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "KrisRo\\PhpDatabaseModel\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "cristianradu",
+            "email": "kris_ro@yahoo.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
