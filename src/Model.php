@@ -6,13 +6,13 @@ namespace KrisRo\PhpDatabaseModel;
  * Magic calls:
  * <code>get(Assoc|Objects|Unique|Column|Indexed|Grouped){Table_name}ByCondition()->(all|next)()</code>
  * <code>get(Assoc|Objects|Unique|Column|Indexed|Grouped){Table_name}By{Column_name}()->(all|next)()</code>
- * <code>set{Table_name}</code>
- * <code>set{Table_name}AndGetId</code>
- * <code>update{Table_name}ByCondition</code>
- * <code>update{Table_name}</code>
- * <code>delete{Table_name}ByCondition</code>
- * <code>delete{Table_name}</code>
- * <code>count{Table_name}ByCondition</code>
+ * <code>set{Table_name}()</code>
+ * <code>set{Table_name}AndGetId()</code>
+ * <code>update{Table_name}ByCondition()</code>
+ * <code>update{Table_name}()</code>
+ * <code>delete{Table_name}ByCondition()</code>
+ * <code>delete{Table_name}()</code>
+ * <code>count{Table_name}ByCondition()</code>
  */
 class Model extends Database {
 
