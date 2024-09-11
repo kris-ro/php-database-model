@@ -11,8 +11,11 @@ class DatabaseTest extends TestCase {
       'username' => 'k',
       'password' => '123456',
     ]);
-    
+
     $this->assertEquals(TRUE, $database instanceof \KrisRo\PhpDatabaseModel\Database);
+
+    $newDatabase = new Database($database->getConnection());
+    $this->assertEquals(TRUE, $newDatabase instanceof \KrisRo\PhpDatabaseModel\Database);
   }
 
   public function testFetch() {
@@ -22,13 +25,13 @@ class DatabaseTest extends TestCase {
       'username' => 'k',
       'password' => '123456',
     ]);
-    
+
     $rows = $database->query('SELECT * FROM users LIMIT 0,1')->execute()->fetchAllObject();
     $this->assertEquals(TRUE, !empty($rows));
-    
+
     $rows = $database->query('SELECT * FROM users LIMIT 0,2')->execute()->fetchAllAssoc();
     $this->assertEquals(TRUE, !empty($rows));
-    
+
     $rows = $database->query('SELECT * FROM users LIMIT 0,2')->execute()->fetchAllNum();
     $this->assertEquals(TRUE, !empty($rows));
 
@@ -71,7 +74,7 @@ class DatabaseTest extends TestCase {
       'password' => '123456',
     ]);
 
-    
+
     /**
      * Get inserted ID
      */
@@ -80,7 +83,7 @@ class DatabaseTest extends TestCase {
 
     $insertedId = $database->query($queryString)->execute()->returnId();
     $this->assertEquals(TRUE, is_int($insertedId));
-    
+
     /**
      * Get number of inserted rows
      */

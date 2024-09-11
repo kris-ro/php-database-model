@@ -6,36 +6,36 @@ class Database {
 
   /**
    * Database connection
-   * 
-   * @var object 
+   *
+   * @var object
    *   PDO object
    */
   protected $databaseConnection = null;
 
   /**
    * Transaction ID
-   * 
+   *
    * @var string
    */
   protected $transactionId = null;
 
   /**
    * Query object
-   * 
+   *
    * @var object
    */
   private $query = null;
 
   /**
    * Default PDO method
-   * 
+   *
    * @var string
    */
   protected $method = 'fetchAll';
 
   /**
    * Accepted PDO operations
-   * 
+   *
    * @var array
    */
   private $allowedMethods = ['fetchAll', 'returnId', 'rowCount'];
@@ -44,40 +44,43 @@ class Database {
    * No error value return on executing params
    */
   private $_MYSQL_CLEAR_ERR = '00000';
-  
+
   protected $fetchModes = [
     \PDO::FETCH_ASSOC,
     \PDO::FETCH_NUM,
     \PDO::FETCH_BOTH,
     \PDO::FETCH_OBJ,
-    
+
     \PDO::FETCH_COLUMN,
     \PDO::FETCH_KEY_PAIR,
     \PDO::FETCH_UNIQUE,
     \PDO::FETCH_GROUP,
   ];
-  
+
   /**
    * Constructor
-   * 
+   *
    * @param array $credentials
    */
-  public function __construct(?array $credentials = NULL) {
-    if ($credentials) {
+  public function __construct(array|\PDO|null $credentialsOrPDO = NULL) {
+    if ($credentialsOrPDO instanceof \PDO) {
+      $this->databaseConnection = $credentialsOrPDO;
+
+    } elseif (is_array($credentialsOrPDO) && $credentialsOrPDO) {
       $this->createConnection([
-        'host' => $credentials['host'],
-        'database' => $credentials['database'],
-        'username' => $credentials['username'],
-        'password' => $credentials['password'],
+        'host' => $credentialsOrPDO['host'],
+        'database' => $credentialsOrPDO['database'],
+        'username' => $credentialsOrPDO['username'],
+        'password' => $credentialsOrPDO['password'],
       ]);
     }
   }
 
   /**
    * Creates database connection
-   * 
+   *
    * @param array $credentials
-   * 
+   *
    * @return $this
    */
   public function createConnection(array $credentials): self {
@@ -96,25 +99,25 @@ class Database {
 
     return $this;
   }
-  
+
   /**
    * Set SQL query
-   * 
+   *
    * @param string $query
-   * 
+   *
    * @return self
    */
   public function query(string $query): self {
     $this->query = $this->databaseConnection->prepare($query);
-    
+
     return $this;
   }
-  
+
   /**
    * Execute query params
-   * 
+   *
    * @param array|null $params
-   * 
+   *
    * @return self
    */
   public function execute(?array $params = []): self {
@@ -131,10 +134,10 @@ class Database {
 
     return $this;
   }
-  
+
   /**
    * rowCount wrapper
-   * 
+   *
    * @return int
    */
   public function rowCount(): int {
@@ -149,30 +152,30 @@ class Database {
 
     return $count;
   }
-  
+
   /**
    * Get last ID returned by MySQL's LAST_INSERT_ID()
-   * 
+   *
    * @return int
    */
   public function returnId(): int {
     $this->query = $this->databaseConnection->prepare('SELECT LAST_INSERT_ID() as returnID');
     $this->query->execute();
-    
+
     $lastInsertedId = $this->query->fetch(\PDO::FETCH_COLUMN);
-    
+
     if ($lastInsertedId === FALSE) {
       trigger_error('Last insert ID query error', E_USER_ERROR);
     }
 
     return $lastInsertedId;
   }
-  
-  
+
+
   public function insertRow() {
-    
+
   }
-  
+
   public function fetch($fetchMode): bool|array|\stdClass {
     if (!$this->query) {
       trigger_error('Query is missing', E_USER_ERROR);
@@ -184,19 +187,19 @@ class Database {
 
     return $this->query->fetch($fetchMode);
   }
-  
+
   /**
    * Fetch results
-   * 
+   *
    * @param int|null $fetchMode
-   * 
+   *
    * @return array
    */
   public function fetchAll(?int $fetchMode = NULL): array {
     if (!$this->query) {
       trigger_error('Query is missing', E_USER_ERROR);
     }
-    
+
     $allowedFetchModes = [
       \PDO::FETCH_OBJ,
       \PDO::FETCH_ASSOC,
@@ -207,7 +210,7 @@ class Database {
       \PDO::FETCH_UNIQUE,
       \PDO::FETCH_GROUP,
     ];
-    
+
     if (!$fetchMode) {
       $fetchMode = \PDO::FETCH_ASSOC;
 
@@ -221,10 +224,10 @@ class Database {
 
     return $this->query->fetchAll($fetchMode) ?: [];
   }
-  
+
   /**
    * Fetch as stdClass objects
-   * 
+   *
    * @return array
    *   Array of objects
    */
@@ -234,34 +237,34 @@ class Database {
 
   /**
    * Fetch associative array
-   * 
+   *
    * @return array
    */
   public function fetchAllAssoc(): array {
     return $this->fetchAll(\PDO::FETCH_ASSOC);
   }
-  
+
   /**
    * Fetch numerically indexed array
-   * 
+   *
    * @return array
    */
   public function fetchAllNum(): array {
     return $this->fetchAll(\PDO::FETCH_NUM);
   }
-  
+
   /**
    * Fetch indexed by column and numerically
-   * 
+   *
    * @return array
    */
   public function fetchAllBoth(): array {
     return $this->fetchAll(\PDO::FETCH_BOTH);
   }
-  
+
   /**
    * Fetch indexed by id or another unique column
-   * 
+   *
    * <code>
    * 'SELECT id, name, city FROM users';
    * array (
@@ -275,7 +278,7 @@ class Database {
    *  ),
    * )
    * </code>
-   * 
+   *
    * @return array
    */
   public function fetchAllUnique(): array {
@@ -284,7 +287,7 @@ class Database {
 
   /**
    * Fetch one column indexed numerically
-   * 
+   *
    * <code>
    * 'SELECT name FROM users'
    * array (
@@ -294,7 +297,7 @@ class Database {
    *  3 => 'Serena',
    * )
    * </code>
-   * 
+   *
    * @return array
    */
   public function fetchAllOneColumn(): array {
@@ -303,7 +306,7 @@ class Database {
 
   /**
    * Fetch rows of pairs indexed by column
-   * 
+   *
    * <code>
    * 'SELECT name, car FROM users'
    * array (
@@ -313,7 +316,7 @@ class Database {
    *  'Serena' => 'Mazda',
    * )
    * </code>
-   * 
+   *
    * @return array
    */
   public function fetchAllIndexedByColumn(): array {
@@ -322,11 +325,11 @@ class Database {
 
   /**
    * Fetch rows grouped by column
-   * 
+   *
    * <code>
    * 'SELECT city, users.* FROM users'
    * array (
-   *  'London' => array ( 
+   *  'London' => array (
    *    0 => array (
    *      'name' => 'Jerry',
    *      'city' => 'London',
@@ -348,7 +351,7 @@ class Database {
    *  ),
    * )
    * </code>
-   * 
+   *
    * @return array
    */
   public function fetchAllGrouped(): array {
@@ -357,7 +360,7 @@ class Database {
 
   /**
    * Fetch grouped data
-   * 
+   *
    * <code>
    * 'SELECT city, name FROM users'
    * array (
@@ -371,7 +374,7 @@ class Database {
         ),
     )
    * </code>
-   * 
+   *
    * @return array
    */
   public function fetchAllGroupedColumn(): array {
@@ -384,10 +387,10 @@ class Database {
 
   /**
    * Start transaction
-   * 
+   *
    * @param array|null $lockTables
    * @param int|null $lockId
-   * 
+   *
    * @return bool
    */
   public function beginTransaction(?array $lockTables = [], ?int $lockId = NULL): bool {
@@ -405,9 +408,9 @@ class Database {
 
   /**
    * Rollback a transaction
-   * 
+   *
    * @param int|null $lockId
-   * 
+   *
    * @return bool
    */
 	public function rollBack(?int $lockId = NULL): bool {
@@ -424,10 +427,10 @@ class Database {
 	}
 
   /**
-   * Commit a transaction 
-   * 
+   * Commit a transaction
+   *
    * @param type $lockId
-   * 
+   *
    * @return bool
    */
 	public function commit($lockId = null): bool {
@@ -444,8 +447,17 @@ class Database {
 	}
 
   /**
+   * Get existing database connection or NULL if not set up
+   *
+   * @return \PDO|null
+   */
+  public function getConnection(): \PDO|null {
+    return $this->databaseConnection;
+  }
+
+  /**
    * Lock specified tables
-   * 
+   *
    * @param array|null $tables
    */
   private function lockTables(?array $tables = []): void {
