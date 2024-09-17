@@ -399,7 +399,7 @@ class Database {
     }
 
     $this->databaseConnection->beginTransaction();
-    $this->transaction = $lockId;
+    $this->transactionId = $lockId;
 
     $this->lockTables($lockTables);
 
