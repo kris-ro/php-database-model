@@ -136,6 +136,21 @@ class ModelTest extends TestCase {
     $this->assertEquals(TRUE, $query->next() instanceof \stdClass);
     $this->assertEquals(FALSE, $query->next());
   }
+
+  public function testSelectInCondition() {
+    $model = new Model([
+      'host' => 'localhost',
+      'database' => 'test',
+      'username' => 'k',
+      'password' => '123456',
+    ]);
+    
+    $criteria = Model::simulateSqlIn('users_id', [38, 42]);
+
+    $rows = $model->getAssocUsersByCondition($criteria)->all();
+
+    $this->assertEquals(TRUE, is_array($rows));
+  }
   
   public function testUpdate() {
     $model = new Model([

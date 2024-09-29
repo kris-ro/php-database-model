@@ -330,6 +330,43 @@ class Model extends Database {
   }
 
   /**
+   * Prep data for IN sql condition
+   *
+   * @param string $key The name of the table column
+   * @param mixed $values string or array with values to be prepared (if string is suplied values must be separated with coma ",")
+   *
+   * @return array
+   *  The sql condition and the prepared values
+   */
+  public static function simulateSqlIn(string $key, array|string $values, ?string $operator = '=', ?string $table = ''): array {
+    /* get a unique string */
+    $rand = rand(1000, 10000);
+
+    if (!is_array($values)) {
+      $values = array_filter(explode(',', $values));
+    }
+
+    if(empty($values)) {
+      return [
+        'params' => [],
+        'condition' => '',
+      ];
+    }
+
+    $params = [];
+    $where = [];
+    foreach ($values as $i => $value) {
+      $params[":{$key}_{$rand}_{$i}"] = ($operator == 'like' ? "%$value%" : $value);
+      $where[] = ($table ? "`{$table}`." : '') . "`$key` $operator :{$key}_{$rand}_{$i}";
+    }
+
+    return [
+      'params' => $params,
+      'condition' => '(' . implode(' or ', $where) . ')',
+    ];
+  }
+
+  /**
    * Builds query's field string
    * 
    * @param string|array|null $select
