@@ -62,7 +62,7 @@ class Database {
    *
    * @param array $credentials
    */
-  public function __construct(array|\PDO|null $credentialsOrPDO = NULL) {
+  public function __construct(array|\PDO|null $credentialsOrPDO = NULL, string|null $charset = 'utf8mb4') {
     if ($credentialsOrPDO instanceof \PDO) {
       $this->databaseConnection = $credentialsOrPDO;
 
@@ -72,7 +72,7 @@ class Database {
         'database' => $credentialsOrPDO['database'],
         'username' => $credentialsOrPDO['username'],
         'password' => $credentialsOrPDO['password'],
-      ]);
+      ], $charset);
     }
   }
 
@@ -83,10 +83,10 @@ class Database {
    *
    * @return $this
    */
-  public function createConnection(array $credentials): self {
+  public function createConnection(array $credentials, string|null $charset = 'utf8mb4'): self {
     try {
       $this->databaseConnection = new \PDO(
-        'mysql: --default-character-set=utf8;charset=utf8;' . 'host=' . ($credentials['host'] ?? null) . ';dbname=' . ($credentials['database'] ?? null),
+        'mysql: --default-character-set=' . $charset . ';charset=' . $charset . ';' . 'host=' . ($credentials['host'] ?? null) . ';dbname=' . ($credentials['database'] ?? null),
         ($credentials['username'] ?? null),
         ($credentials['password'] ?? null),
         [\PDO::MYSQL_ATTR_FOUND_ROWS => true]
