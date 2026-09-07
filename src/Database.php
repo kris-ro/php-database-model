@@ -398,10 +398,10 @@ class Database {
       return TRUE;
     }
 
+    $this->lockTables($lockTables);
+
     $this->databaseConnection->beginTransaction();
     $this->transactionId = $lockId;
-
-    $this->lockTables($lockTables);
 
 		return TRUE;
 	}
