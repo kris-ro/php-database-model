@@ -338,7 +338,7 @@ class Model extends Database {
    * @return array
    *  The sql condition and the prepared values
    */
-  public static function simulateSqlIn(string $key, array|string $values, ?string $operator = '=', ?string $table = ''): array {
+  public static function simulateSqlIn(string $key, array|string $values, ?string $operator = '=', ?string $table = '', ?string $join = 'OR'): array {
     /* get a unique string */
     $rand = rand(1000, 10000);
 
@@ -362,7 +362,7 @@ class Model extends Database {
 
     return [
       'params' => $params,
-      'condition' => '(' . implode(' or ', $where) . ')',
+      'condition' => '(' . implode(" {$join} ", $where) . ')',
     ];
   }
 

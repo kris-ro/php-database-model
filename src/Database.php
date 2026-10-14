@@ -89,7 +89,7 @@ class Database {
         'mysql: --default-character-set=' . $charset . ';charset=' . $charset . ';' . 'host=' . ($credentials['host'] ?? null) . ';dbname=' . ($credentials['database'] ?? null),
         ($credentials['username'] ?? null),
         ($credentials['password'] ?? null),
-        [\PDO::MYSQL_ATTR_FOUND_ROWS => true]
+        [\Pdo\Mysql::ATTR_FOUND_ROWS => true]
       );
 
     } catch (\PDOException $e) {
